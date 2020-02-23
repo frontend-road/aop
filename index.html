@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AOP</title>
+</head>
+<body>
+  <h1>AOP 面向切面编程</h1>
+  <script>
+    Function.prototype.before = function(fn) {
+      console.log('before this:', this)
+      var _this = this
+      return function() {
+        if (fn.apply(_this, arguments) === false) return false // 退出执行
+        return _this.apply(_this, arguments)
+      }
+    }
+    Function.prototype.after = function(fn) {
+      console.log('after this:', this)
+      var _this = this
+      return function() {
+        var result = _this.apply(_this, arguments)
+        if (result === false) return false
+        fn.apply(_this, arguments)
+        return result
+      }
+    }
+
+    function test() {
+      alert('invoking...')
+      return 'Hello World!'
+    }
+
+    var result1 = test.before(function() {
+      alert('before1')
+    }).after(function() {
+      alert('after1')
+    })()
+    console.log(result1)
+
+    var result2 = test.after(function() {
+      alert('after2')
+    }).before(function() {
+      alert('before2')
+      return false // 提前退出标志
+    })()
+    console.log(result2)
+  </script>
+</body>
+</html>
